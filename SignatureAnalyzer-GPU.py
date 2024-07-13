@@ -129,7 +129,7 @@ def run_parameter_sweep(parameters, data, args, Beta):
     parameters.to_csv(args.output_dir + '/parameters_with_results.txt',sep='\t',index=None)
 
 def write_output(W, H, mask, channel_names, sample_names, output_directory, label,  active_thresh = 1e-5):
-    createFolder(output_directory)
+    #createFolder(output_directory)
     nonzero_idx = (np.sum(H, axis=1) * np.sum(W, axis=0)) > active_thresh
     W_active = W[:, nonzero_idx]
     H_active = H[nonzero_idx, :]
@@ -145,15 +145,19 @@ def write_output(W, H, mask, channel_names, sample_names, output_directory, labe
     mask_df = pd.DataFrame(mask, index=channel_names, columns=sample_names)
 
     # Write W and H matrices
-    W_df.to_csv(output_directory + '/'+label+ '_W.txt', sep='\t')
-    H_df.to_csv(output_directory + '/'+label+ '_H.txt', sep='\t')
-    mask_df.to_csv(output_directory + '/'+label+ '_mask.txt', sep='\t')
+    #W_df.to_csv(output_directory + '/'+label+ '_W.txt', sep='\t')
+    #H_df.to_csv(output_directory + '/'+label+ '_H.txt', sep='\t')
+    #mask_df.to_csv(output_directory + '/'+label+ '_mask.txt', sep='\t')
     
-    return nsig
+    return nsig,W_df,H_df
 
-def main():
+def main(arglist):
     ''' Run ARD NMF'''
-    torch.multiprocessing.set_start_method('spawn')
+    try:
+        torch.multiprocessing.set_start_method('spawn')
+    except RuntimeError:
+        pass
+    
 
     parser = argparse.ArgumentParser(
         description='NMF with some sparsity penalty described https://arxiv.org/pdf/1111.6085.pdf')
@@ -201,7 +205,7 @@ def main():
                                                                                              'If neither --force_use_val_set or --force_no_val_set is passed, will default to create and evaluate on'
                                                                                              'a held out validation set when parameters_file is provided, and not otherwise.')
     parser.set_defaults(use_val_set=None)
-    args = parser.parse_args()
+    args = parser.parse_args(args=arglist)
 
 
     print('Reading data frame from '+ args.data)
@@ -256,6 +260,7 @@ def main():
             args.report_frequency,
         )
         nsig = write_output(W,H,mask,data.channel_names,data.sample_names,args.output_dir,args.output_dir)
+        return(nsig,final_report)
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()

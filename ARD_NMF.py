@@ -11,14 +11,14 @@ import math
 import torch
 from typing import Union
 import multiprocessing.connection as mpc
-from .NMF_functions import *
+from NMF_functions import *
 
 class ARD_NMF:
     """
     NMF results class implements both half normal and exponential prior ARD NMF
     implementation based on https://arxiv.org/pdf/1111.6085.pdf
     """
-    def __init__(self,dataset,objective,dtype = torch.float32, verbose=True):
+    def __init__(self,dataset,objective,dtype = torch.float32, verbose=False):
         self.eps_ = torch.tensor(1.e-30,dtype=dtype,requires_grad=False)
         self.dataset = dataset
         zero_idx = np.sum(self.dataset, axis=1) > 0
@@ -48,7 +48,7 @@ class ARD_NMF:
             * Beta
             * K0: set to number of input features if not provided
         """
-        print('NMF class initialized.')
+        
 
     def initalize_data(self,a,phi,b,prior_W,prior_H,Beta,K0,use_val_set,dtype = torch.float32):
         
