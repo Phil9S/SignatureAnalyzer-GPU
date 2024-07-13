@@ -18,7 +18,7 @@ class ARD_NMF:
     NMF results class implements both half normal and exponential prior ARD NMF
     implementation based on https://arxiv.org/pdf/1111.6085.pdf
     """
-    def __init__(self,dataset,objective,dtype = torch.float32, verbose=False):
+    def __init__(self,dataset,objective,dtype = torch.float32, verbose=True):
         self.eps_ = torch.tensor(1.e-30,dtype=dtype,requires_grad=False)
         self.dataset = dataset
         zero_idx = np.sum(self.dataset, axis=1) > 0
@@ -222,11 +222,11 @@ def run_method_engine(
     cuda_string = 'cuda:'+str(cuda_int)
     # copy data to GPU
     if torch.cuda.device_count() > 0 and cuda_int is not None:
-        if verbose: print("   * Using GPU: {}".format(cuda_string))
+        if verbose: print("Using GPU: {}".format(cuda_string))
         W,H,V,Lambda,C,b0,eps_,phi,mask = results.W.cuda(cuda_string),results.H.cuda(cuda_string),results.V.cuda(cuda_string),results.Lambda.cuda(cuda_string),results.C.cuda(cuda_string),results.b.cuda(cuda_string),results.eps_.cuda(cuda_string),results.phi.cuda(cuda_string),results.mask.cuda(cuda_string)
     else:
         W,H,V,Lambda,C,b0,eps_,phi,mask = results.W,results.H,results.V,results.Lambda,results.C,results.b,results.eps_,results.phi,results.mask
-        if verbose: print("   * Using CPU")
+        if verbose: print("Using CPU")
 
     # tracking variables
     deltrack = 1000
@@ -234,10 +234,8 @@ def run_method_engine(
     report = dict()
     iter = 0
     lam_previous = Lambda
-    if verbose: print('%%%%%%%%%%%%%%%')
     if verbose: print('a =',results.a)
     if verbose: print('b =',results.bcpu)
-    if verbose: print('%%%%%%%%%%%%%%%')
 
     # set method
     method = NMF_algorithim(Beta, H_prior, W_prior)

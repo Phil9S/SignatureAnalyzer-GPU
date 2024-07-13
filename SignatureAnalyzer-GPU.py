@@ -151,7 +151,7 @@ def write_output(W, H, mask, channel_names, sample_names, output_directory, labe
     
     return nsig,W_df,H_df
 
-def main(arglist):
+def main(data,arglist):
     ''' Run ARD NMF'''
     try:
         torch.multiprocessing.set_start_method('spawn')
@@ -161,7 +161,7 @@ def main(arglist):
 
     parser = argparse.ArgumentParser(
         description='NMF with some sparsity penalty described https://arxiv.org/pdf/1111.6085.pdf')
-    parser.add_argument('--data', help='Data Matrix', required=True)
+    #parser.add_argument('--data', help='Data Matrix', required=True)
     parser.add_argument('--feather', help='Input in feather format', required=False, default=False, action='store_true')
     parser.add_argument('--parquet', help='Input in parquet format', required=False, default=False, action='store_true')
     parser.add_argument('--K0', help='Initial K parameter', required=False, default=None, type=int)
@@ -208,24 +208,12 @@ def main(arglist):
     args = parser.parse_args(args=arglist)
 
 
-    print('Reading data frame from '+ args.data)
-
     if args.dtype == 'Float32':
         args.dtype = torch.float32
     elif args.dtype == 'Float16':
         args.dtype = torch.float16
 
-    if args.parquet:
-        dataset = pd.read_parquet(args.data)
-    elif args.feather:
-        print('loading feather...')
-        dataset = feather.read_dataframe(args.data)
-    else:
-        if args.labeled:
-            dataset = pd.read_csv(args.data, sep='\t', header=0, index_col=0)
-        else:
-            dataset = pd.read_csv(args.data, sep='\t', header=None)
-
+    dataset = data
 
     if args.objective.lower() == 'poisson':
         Beta = 1
