@@ -48,7 +48,7 @@ class ARD_NMF:
             * Beta
             * K0: set to number of input features if not provided
         """
-        
+        #print('NMF class initialized.')
 
     def initalize_data(self,a,phi,b,prior_W,prior_H,Beta,K0,use_val_set,dtype = torch.float32):
         
@@ -266,7 +266,7 @@ def run_method_engine(
                 'W_sum': torch.sum(W).cpu().numpy(),
                 'H_sum': torch.sum(H).cpu().numpy()
             }
-            print_report(iter,report,verbose,tag)
+            
         # ------------------------------------------------------------------- #
         iter+=1
 
@@ -294,7 +294,7 @@ def run_method_engine(
         report[iter]['b_div_val'] = None
         report[iter]['obj_val'] = None
         
-    print_report(iter,report,verbose,tag)
+    
 
     if not verbose:
         stdout.write("\n")
